@@ -1,5 +1,3 @@
-set -x
-
 # ---------------------------------------------------------
 # packages
 # ---------------------------------------------------------
@@ -8,7 +6,7 @@ INSTALL_PACKAGES=
 for p in <% loop for package in (@ present-list) do %><%= package %> <% end %>; do
   rpm -qi --quiet $p;
   if [ $? -ne 0 ]; then
-    INSTALL_PACKAGES=$p $INSTALL_PACKAGES
+    INSTALL_PACKAGES="$p $INSTALL_PACKAGES"
   fi
 done
 if [[ ! -z "$INSTALL_PACKAGES" ]]; then
