@@ -14,6 +14,9 @@
 	       #:uuid
 	       #:md5
 	       #:cl-fad
+	       #:ec2
+	       #:cl-azure
+	       #:cl-openstack-client
                #:hunchentoot)
   :serial t
   :components ((:file "package")
