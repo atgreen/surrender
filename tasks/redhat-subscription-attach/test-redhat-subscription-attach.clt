@@ -1,0 +1,8 @@
+# ---------------------------------------------------------
+# redhat-subscription-attach
+# ---------------------------------------------------------
+
+sudo subscription-manager version | grep -q "server: Unknown"
+if $?; then
+  echo <%= (@ task-id) %>
+fi   

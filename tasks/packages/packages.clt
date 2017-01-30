@@ -1,0 +1,43 @@
+set -x
+
+# ---------------------------------------------------------
+# packages
+# ---------------------------------------------------------
+
+INSTALL_PACKAGES=
+for p in <% loop for package in (@ present-list) do %><%= package %> <% end %>; do
+  rpm -qi --quiet $p;
+  if [ $? -ne 0 ]; then
+    INSTALL_PACKAGES=$p $INSTALL_PACKAGES
+  fi
+done
+if [[ ! -z "$INSTALL_PACKAGES" ]]; then
+  sudo dnf install -y -b --allowerasing $INSTALL_PACKAGES
+  if [ $? -ne 0 ]; then
+    echo <%= (@ task-id) %>
+  fi
+fi
+
+UPDATE_PACKAGES="<% loop for package in (@ update-list) do %><%= package %> <% end %>"
+if [[ ! -z "$UPDATE_PACKAGES" ]]; then
+  sudo dnf update -y $UPDATE_PACKAGES
+  if [ $? -ne 0 ]; then
+    echo <%= (@ task-id) %>
+  fi
+fi
+
+REMOVE_PACKAGES=
+for p in <% loop for package in (@ absent-list) do %><%= package %> <% end %>; do
+  rpm -qi --quiet $p;
+  if [ $? -eq 0 ]; then
+    REMOVE_PACKAGES="$p $REMOVE_PACKAGES"
+  fi
+done
+if [[ ! -z "$REMOVE_PACKAGES" ]]; then
+  sudo dnf remove -y $REMOVE_PACKAGES
+  if [ $? -ne 0 ]; then
+    echo <%= (@ task-id) %>
+  fi
+fi
+
+

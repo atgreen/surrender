@@ -1,0 +1,9 @@
+# ---------------------------------------------------------
+# redhat-subscription-register
+# ---------------------------------------------------------
+
+sudo subscription-manager version 2>&1 | grep -q "server: Unknown"
+
+if [ $? -ne 0 ]; then
+  echo <%= (@ task-id) %>
+fi   
