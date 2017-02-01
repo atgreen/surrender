@@ -60,7 +60,7 @@
 	((probe-file asc-filename)
 	 (decode-load asc-filename))
 	(t
-	 (error "Can't find encrypted file ~A~%(|.gpg|.asc)" filename))))))
+	 (error "Can't find encrypted file ~A(|.gpg|.asc)~%" filename))))))
 
 (defmacro load-encrypted (filename)
   `(load-encrypted-1 ,filename ,(or *compile-file-truename* *load-truename* *default-pathname-defaults*)))
