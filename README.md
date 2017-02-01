@@ -1,8 +1,8 @@
 # Surrender
-## A programming environment for "infrastructure as code"
 
-Surrender brings the full power of the Common Lisp programming
-language and tools to the infrastructure orchestration arena.
+Surrender is a programming environment for "infrastructure as code".
+It brings the full power of the Common Lisp programming language and
+tools to the infrastructure orchestration arena.
 
 Surrender is a work in progress and is subject to frequent changes.
 Use at your own risk.
