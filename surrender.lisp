@@ -119,7 +119,6 @@
 	  (thread-pool:add-to-pool
 	   tpool
 	   #'(lambda ()
-	       (format t "~A ~A~%" surrender/host (class-of surrender/host))
 	       (ssh:with-connection
 		   (surrender/conn (surrender:hostname surrender/host) (ssh:pass (surrender:get-ssh-username surrender/host)
 										 (surrender:get-ssh-password surrender/host)))
