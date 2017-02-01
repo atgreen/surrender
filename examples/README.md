@@ -3,8 +3,8 @@ file.  Use this function to retrieve encrypted credentials from disk.
 In this example we just set the default ssh username and password,
 like so:
 
-(setq surrender:*default-ssh-username* "green")
-(setq surrender:*default-ssh-password* "s3kr1t")
+    (setq surrender:*default-ssh-username* "green")
+    (setq surrender:*default-ssh-password* "s3kr1t")
 
 ...and the encrypt the file with gpg2, like so:
 
