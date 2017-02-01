@@ -1,12 +1,10 @@
 (ql:quickload :surrender)
 
-;; The next 4 lines are temporary hacks
-(in-package :surrender)
-(defvar *SSH-USER* "USER")
-(defvar *SSH-PASSWORD* "PASS")
-(in-package :cl)
+;; Define credentials, which may just include *default-ssh-username*
+;; and *default-ssh-password*.
+(surrender:load-encrypted "secret.lisp")
 
-(surrender:with-inventory '("localhost")
+(surrender:with-inventory (surrender:*localhost*)
 
   ;; Manage the packages we want on this host.
   (surrender:packages
@@ -24,8 +22,8 @@
 	     "emacs-ledger"
 	     "emacs-bbdb"
              "flex"
-             "gcc"
-             "gcc-c++"
+	     "gcc"
+	     "gcc-c++"
              "gdb"
              "gettext"
              "git"

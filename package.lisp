@@ -3,5 +3,16 @@
 (defpackage #:surrender
   (:use #:cl)
   (:export
-   #:with-inventory #:packages #:quit
-   #:copy-file #:redhat-subscription-register))
+   #:*default-ssh-password*
+   #:*default-ssh-username*
+   #:*localhost*
+   #:copy-file
+   #:hostname
+   #:get-ssh-password
+   #:get-ssh-username
+   #:host
+   #:load-encrypted
+   #:packages
+   #:quit
+   #:redhat-subscription-register
+   #:with-inventory))

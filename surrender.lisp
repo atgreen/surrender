@@ -39,10 +39,74 @@
       (uiop:copy-stream-to-stream file-stream upload-stream :element-type '(unsigned-byte 8)))))
 ;;; --------------------------------------------------------------------------
 
+(defun load-encrypted-1 (filename pathname)
+  (let* ((absolute-filename
+	  (namestring (merge-pathnames filename pathname)))
+	 (gpg-filename
+	  (namestring (make-pathname :defaults
+				     (concatenate 'string absolute-filename ".gpg"))))
+	 (asc-filename
+	  (namestring (make-pathname :defaults
+				     (concatenate 'string absolute-filename ".asc")))))
+    (flet ((decode-load (filename)
+	     (let ((source (trivial-shell:shell-command
+			    (concatenate 'string "gpg2 --use-agent -o - --decrypt " filename))))
+	       (load (make-string-input-stream source)))))
+      (cond
+	((probe-file absolute-filename)
+	 (load absolute-filename))
+	((probe-file gpg-filename)
+	 (decode-load gpg-filename))
+	((probe-file asc-filename)
+	 (decode-load asc-filename))
+	(t
+	 (error "Can't find encrypted file ~A~%(|.gpg|.asc)" filename))))))
+
+(defmacro load-encrypted (filename)
+  `(load-encrypted-1 ,filename ,(or *compile-file-truename* *load-truename* *default-pathname-defaults*)))
+
+;;; --------------------------------------------------------------------------
+
+(defclass host ()
+  ((hostname :initarg :hostname :initform nil :accessor hostname)
+   (ipv4-addr :initarg :ipv4-addr :initform nil :accessor ipv4-addr)
+   (ipv6-addr :initarg :ipv6-addr :initform nil :accessor ipv6-addr)
+   (ssh-username :initarg :ssh-username :initform nil :accessor ssh-username)
+   (ssh-password :initarg :ssh-password :initform nil :accessor ssh-password)))
+
+(defvar *default-ssh-username* nil)
+(defvar *default-ssh-password* nil)
+
+(defvar *localhost* (make-instance 'host
+				   :hostname "localhost"))
+
+(defmethod get-ssh-username ((host surrender:host))
+  (let ((username (ssh-username host)))
+    (cond
+      (username
+       username)
+      (*default-ssh-username*
+       *default-ssh-username*)
+      (t
+       (error "No ssh username defined for host ~A, and no *default-ssh-username*~%" host)))))
+
+(defmethod get-ssh-password ((host surrender:host))
+  (let ((password (ssh-password host)))
+    (cond
+      (password
+       password)
+      (*default-ssh-password*
+       *default-ssh-password*)
+      (t
+       (error "No ssh password defined for host ~A, and no *default-ssh-password*~%" host)))))
+
+;;; --------------------------------------------------------------------------
+
 (defmacro with-inventory (inventory &rest body)
-  `(let ((tpool (thread-pool:make-thread-pool *spread*))
-	 (count (length ,inventory))
-	 (count-lock (bordeaux-threads:make-lock)))
+  `(let* ((inventory-list (list ,@inventory))
+	  (tpool (thread-pool:make-thread-pool *spread*))
+	  (count (length inventory-list))
+	  (count-lock (bordeaux-threads:make-lock)))
 
      ;; Start the thread pool.  Tasks are executed in sequence within
      ;; per-host threads
@@ -55,8 +119,10 @@
 	  (thread-pool:add-to-pool
 	   tpool
 	   #'(lambda ()
+	       (format t "~A ~A~%" surrender/host (class-of surrender/host))
 	       (ssh:with-connection
-		   (surrender/conn surrender/host (ssh:pass *SSH-USER* *SSH-PASSWORD*))
+		   (surrender/conn (surrender:hostname surrender/host) (ssh:pass (surrender:get-ssh-username surrender/host)
+										 (surrender:get-ssh-password surrender/host)))
 		 
 		 ;; Generate the target test scripts and run functions
 		 (progn
@@ -65,7 +131,7 @@
 	       (bordeaux-threads:with-lock-held (count-lock)
 		 (decf count)))))
       
-      ,inventory)
+      inventory-list)
      
      ;; Spin until all tasks are complete across all hosts.
      (loop until (equal count 0)

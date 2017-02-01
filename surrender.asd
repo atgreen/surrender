@@ -10,6 +10,7 @@
   :version "0.1"
   :depends-on (#:trivial-ssh
 	       #:cl-template
+	       #:trivial-shell
 	       #:thread-pool
 	       #:uuid
 	       #:md5
