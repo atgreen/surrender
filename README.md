@@ -1,20 +1,20 @@
----------------------------------------------------------------------
-              _____                               _           
-             /  ___|                             | |          
-             \ `--. _   _ _ __ _ __ ___ _ __   __| | ___ _ __ 
-              `--. \ | | | '__| '__/ _ \ '_ \ / _` |/ _ \ '__|
-             /\__/ / |_| | |  | | |  __/ | | | (_| |  __/ |   
-             \____/ \__,_|_|  |_|  \___|_| |_|\__,_|\___|_|   
-                                                
----------------------------------------------------------------------
-Copyright (C) 2017  Anthony Green
----------------------------------------------------------------------
+# Surrender: a programming environment for "infrastructure as code"
 
-Surrender is a programming environment for "infrastructure as code".
+Surrender brings the full power of the Common Lisp programming
+language and tools to the infrastructure orchestration arena.
 
-It brings the full power of the Common Lisp programming language and
-tools to the infrastructure orchestration arena.
+Surrender is a work in progress and is subject to frequent changes.
+Use at your own risk.
 
-*********************************************************************
-********* SURRENDER IS A PROOF OF CONCEPT WORK IN PROGRESS! *********
-*********************************************************************
+## Installation
+
+Install quicklisp, then symlink surrender to your
+quicklisp/local-projects directory.
+
+## Licensing
+
+Copyright 2016 by Anthony Green
+
+Surrender is provided under the terms of the GNU General Public
+License, version 2 or later. Please see the COPYING file for complete
+GPLv2+ license terms.
