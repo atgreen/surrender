@@ -6,7 +6,7 @@
   :description "The infrastructure programming environment"
   :author "Anthony Green <green@moxielogic.org>"
   :maintainer "Anthony Green <green@moxielogic.org>"
-  :license "GPLv3"
+  :license "GPLv2"
   :version "0.1"
   :depends-on (#:cl-azure
 	       #:cl-fad
@@ -19,6 +19,7 @@
 	       #:thread-pool
 	       #:trivial-shell
 	       #:trivial-ssh
+	       #:unix-options
 	       #:uuid)
   :serial t
   :components ((:file "package")
