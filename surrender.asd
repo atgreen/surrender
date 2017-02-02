@@ -8,17 +8,18 @@
   :maintainer "Anthony Green <green@moxielogic.org>"
   :license "GPLv3"
   :version "0.1"
-  :depends-on (#:trivial-ssh
-	       #:cl-template
-	       #:trivial-shell
-	       #:thread-pool
-	       #:uuid
-	       #:md5
+  :depends-on (#:cl-azure
 	       #:cl-fad
-	       #:ec2
-	       #:cl-azure
 	       #:cl-openstack-client
-               #:hunchentoot)
+	       #:cl-template
+	       #:ec2
+               #:hunchentoot
+	       #:ironclad
+	       #:md5
+	       #:thread-pool
+	       #:trivial-shell
+	       #:trivial-ssh
+	       #:uuid)
   :serial t
   :components ((:file "package")
                (:file "surrender")))

@@ -59,6 +59,12 @@
    (:absent "php" "clisp" "vim" "jenkins" "nodejs" "httpd"
 	    "steam" "gnucash" "qt-devel" "mock" "v8"))
 
+;  (surrender:copy-file
+;   :source "simple.lisp"
+;   :target "/etc/hosts"
+;   :perm "0600"
+;   :own "root.root")
+  
   (surrender:services
    (:disabled "nfs")
    (:stopped "nfs")

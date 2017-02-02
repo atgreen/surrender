@@ -152,9 +152,41 @@
 		 (read-sequence template template-file)
 		 (funcall (cl-template:compile-template template) (list :task-id ,task-id)))))))
 
+(defun list-to-alist (list)
+  (if (null list)
+      (list)
+      (cons (cons (car list) (cadr list))
+	    (list-to-alist (cddr list)))))
+
 (defmacro copy-file (&rest fileinfo)
-  (let ((md5 (md5:md5sum-file (car fileinfo))))
-    ))
+  (let* ((task-id (gen-task-id))
+	 (alist (list-to-alist fileinfo))
+	 (source (cdr (assoc :source alist)))
+	 (target (cdr (assoc :target alist)))
+	 (perm (cdr (assoc :perm alist)))
+	 (own (cdr (assoc :own alist)))
+	 (md5 (crypto:byte-array-to-hex-string (md5:md5sum-file source))))
+    `(progn
+       (with-open-file (run-script #p"/tmp/analysis"
+				   :direction :output
+				   :if-exists :supersede
+				   :external-format '(:utf-8 :eol-style :crlf))
+	 (with-open-file (template-file (asset-path "tasks/copy-file/copy-file.clt"))
+	   (format run-script
+		   (let ((template (make-string (file-length template-file))))
+		     (read-sequence template template-file)
+		     (funcall (cl-template:compile-template template) (list :task-id ,task-id
+									    :source ',source
+									    :target ',target
+									    :md5 ',md5))))))
+       (my-upload-file surrender/conn
+		       #p"/tmp/analysis"
+		       #p"/tmp/analysis-copy")
+       (ssh:with-command (surrender/conn iostream "chmod +x /tmp/analysis-copy && /tmp/analysis-copy 2>&1 | tee /tmp/analysis-copy.output")
+	 (when iostream
+	   (loop for line = (read-line iostream nil)
+	      while line do
+		(format t "~A~%" line)))))))   
 
 (defmacro packages (&rest package-list)
   (let ((task-id (gen-task-id))
