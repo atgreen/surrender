@@ -15,4 +15,5 @@
    #:packages
    #:quit
    #:redhat-subscription-register
+   #:services
    #:with-inventory))

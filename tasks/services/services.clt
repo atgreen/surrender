@@ -1,0 +1,58 @@
+# ---------------------------------------------------------
+# services
+# ---------------------------------------------------------
+
+for s in <% loop for service in (@ enabled-list) do %><%= service %> <% end %>; do
+  systemctl is-enabled $s > /dev/null 2>&1
+  if [ $? -ne 0 ]; then
+    sudo systemctl enable $s > /dev/null 2>&1
+    systemctl is-enabled $s > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+      echo <%= (@ task-id) %> "ERROR enabling service" $s;
+    else
+      echo <%= (@ task-id) %> "CHANGED enabled service" $s;
+    fi
+  fi
+done
+
+for s in <% loop for service in (@ disabled-list) do %><%= service %> <% end %>; do
+  systemctl is-enabled $s > /dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    sudo systemctl disable $s > /dev/null 2>&1
+    systemctl is-enabled $s > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+      echo <%= (@ task-id) %> "ERROR disabling service" $s;
+    else
+      echo <%= (@ task-id) %> "CHANGED disabled service" $s;
+    fi
+  fi
+done
+
+for s in <% loop for service in (@ started-list) do %><%= service %> <% end %>; do
+  systemctl is-active $s > /dev/null 2>&1
+  if [ $? -ne 0 ]; then
+    sudo systemctl start $s > /dev/null 2>&1
+    systemctl is-active $s > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+      echo <%= (@ task-id) %> "ERROR starting service" $s;
+    else
+      echo <%= (@ task-id) %> "CHANGED starting service" $s;
+    fi
+  fi
+done
+
+for s in <% loop for service in (@ stopped-list) do %><%= service %> <% end %>; do
+  systemctl is-active $s > /dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    sudo systemctl stop $s > /dev/null 2>&1
+    systemctl is-active $s > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+      echo <%= (@ task-id) %> "ERROR stopping service" $s;
+    else
+      echo <%= (@ task-id) %> "CHANGED stopping service" $s;
+    fi
+  fi
+done
+
+
+

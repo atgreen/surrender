@@ -191,6 +191,45 @@
 	      while line do
 		(format t "~A~%" line)))))))
 
+(defmacro services (&rest service-list)
+  (let ((task-id (gen-task-id))
+	(enabled-list nil)
+	(disabled-list nil)
+	(stopped-list nil)
+	(started-list nil))
+    (loop for service-form in service-list do
+	 (cond
+	   ((eq (car service-form) :enabled)
+	    (setq enabled-list (cdr service-form)))
+	   ((eq (car service-form) :disabled)
+	    (setq disabled-list (cdr service-form)))
+	   ((eq (car service-form) :stopped)
+	    (setq stopped-list (cdr service-form)))
+	   ((eq (car service-form) :started)
+	    (setq started-list (cdr service-form)))))
+    `(progn
+       (with-open-file (run-script #p"/tmp/analysis"
+				   :direction :output
+				   :if-exists :supersede
+				   :external-format '(:utf-8 :eol-style :crlf))
+	 (with-open-file (template-file (asset-path "tasks/services/services.clt"))
+	   (format run-script
+		   (let ((template (make-string (file-length template-file))))
+		     (read-sequence template template-file)
+		     (funcall (cl-template:compile-template template) (list :task-id ,task-id
+									    :enabled-list ',enabled-list
+									    :disabled-list ',disabled-list
+									    :started-list ',started-list
+									    :stopped-list ',stopped-list))))))
+       (my-upload-file surrender/conn
+		       #p"/tmp/analysis"
+		       #p"/tmp/analysis-copy")
+       (ssh:with-command (surrender/conn iostream "chmod +x /tmp/analysis-copy && /tmp/analysis-copy 2>&1 | tee /tmp/analysis-copy.output")
+	 (when iostream
+	   (loop for line = (read-line iostream nil)
+	      while line do
+		(format t "~A~%" line)))))))
+
 (defun quit (&optional code)
       ;; This group from "clocc-port/ext.lisp"
       #+allegro (excl:exit code)

@@ -34,6 +34,7 @@
              "libtool"
              "make"
              "mlocate"
+	     "nfs-utils"
              "patch"
              "pcre-devel"
              "python-devel"
@@ -44,7 +45,7 @@
              "subversion"
              "tcplay"
              "texinfo"
-             "v8-devel"
+	     "tuned"
              "valgrind"
              "xorg-x11-fonts-100dpi"
              "xorg-x11-fonts-ISO8859-1-100dpi"
@@ -56,6 +57,12 @@
              "zlib-devel")
 
    (:absent "php" "clisp" "vim" "jenkins" "nodejs" "httpd"
-	    "steam" "gnucash" "qt-devel" "mock")))
+	    "steam" "gnucash" "qt-devel" "mock" "v8"))
+
+  (surrender:services
+   (:disabled "nfs")
+   (:stopped "nfs")
+   (:started "crashplan" "tuned")
+   (:enabled "crashplan" "tuned")))
 
 (surrender:quit)
